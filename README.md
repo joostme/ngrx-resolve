@@ -1,27 +1,119 @@
-# NgrxResolve
+# ngrx-resolve
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.6.
+This example app shows the usage of a Routing Resolver for NGRX. This couples the route config tightly to the data loading of NGRX.
 
-## Development server
+It ensures that data is loaded before a route or child routes are entered.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+The resolver is configured using the `data` object of the route.
 
-## Code scaffolding
+## Data Config
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+The data config has the following interface:
 
-## Build
+```ts
+export interface NgrxResolveConfig {
+    triggers?: TriggerFn[];
+    watch?: WatchFn[];
+}
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+Whereas the `TriggerFn` and `WatchFn` are the following types:
 
-## Running unit tests
+```ts
+export type TriggerFn = (store: Store<any>, params?: {[key: string]: string}, data?:  {[key: string]: string}) => void;
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+export type WatchFn = (store: Store<any>) => Observable<boolean>;
+```
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+Every function is called with the NGRX Store instance.
+The `TriggerFn` is additionally called with the routes params as well as the `data` object **(without the `ngrx` property)**
 
-## Further help
+This data config is then added to the routes `data` object together with the `NgrxResolve` and the `resolve` option of the route.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+**NOTE: Adding it to the `ngrx` property is important!**
+
+```ts
+{
+    path: 'books',
+    loadChildren: 'app/book-module/book.module#BookModule',
+    resolve: {
+      ngrx: NgrxResolve
+    },
+    data: {
+      ngrx: ngrxResolveBooksConfig
+    }
+  }
+```
+
+## How it works
+
+Before entering the route, the `NgrxResolve` will call all defined trigger functions with the NGRX Store as well as the route parameters.
+
+After calling each trigger function the resolver then returns an `Observable<boolean>`. This observable will only resolve when all the watch functions also resolve `true`.
+
+## Example
+
+This app provides an example application on how to use this data resolver together with a list of books.
+
+The detail page of a book depends on the list of books - so we have to ensure they are loaded before routing to the detail page. The configuration for the loading of the books as well as waiting for the loading to finish looks like this:
+
+```ts
+const triggerLoadBooks: TriggerFn =
+  (store: Store<AppState>) => store.dispatch(new LoadBooksAction());
+
+
+const waitForBooksLoaded: WatchFn =
+  (store: Store<AppState>) => {
+    return store.select(state => state.books.loaded)
+      .filter(loaded => !!loaded)
+      .first();
+  };
+
+
+export const ngrxResolveBooksConfig: NgrxResolveConfig = {
+  triggers: [
+    triggerLoadBooks
+  ],
+  watch: [
+    waitForBooksLoaded
+  ]
+};
+```
+We use variables here instead of functions to be type safe and use the `TriggerFn` as well as `WatchFn` types.
+
+Notice how `waitForBooksLoaded` returns an Observable that only returns `true`. And also only one time. **This is important!**
+
+The configuration for the detail page of a book then looks like this:
+
+```ts
+const triggerBookDetails: TriggerFn =
+  (store: Store<AppState>, params: { id: string }) => store.dispatch(new SelectBookAction(toNumber(params.id)));
+
+
+export const ngrxResolveBookDetailConfig: NgrxResolveConfig = {
+  triggers: [
+    triggerBookDetails
+  ]
+};
+```
+
+This way the data in the NGRX store is more tightly coupled to the routes and allows for a more modular approach of bundling the application.
+
+# Start the application
+
+Simply
+
+```bash
+npm install
+```
+
+and then
+
+
+```bash
+npm start
+```
+
+The app will start on `http://localhost:4200`
+
