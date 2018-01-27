@@ -27,7 +27,7 @@ export class NgrxResolve implements Resolve<boolean> {
     if (!isUndefined(config.triggers)) {
       config.triggers.forEach(trigger => {
         this.log(`Triggering ${trigger.name}`);
-        trigger(this.store, route.params, omit(route.data));
+        trigger(this.store, route.params, omit(route.data, 'ngrx'));
       });
     }
 
