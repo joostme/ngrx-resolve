@@ -7,6 +7,7 @@ import { AppRoutingModule } from './app.routing.module';
 import { StoreModule } from './store/store.module';
 import { HttpClientModule } from '@angular/common/http';
 import { BooksService } from './services/books.service';
+import { NgrxResolveModule } from './ngrx-resolve/ngrx-resolve.module';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { BooksService } from './services/books.service';
     BrowserModule,
     AppRoutingModule,
     StoreModule,
-    HttpClientModule
+    HttpClientModule,
+    NgrxResolveModule
   ],
   providers: [
     BooksService
