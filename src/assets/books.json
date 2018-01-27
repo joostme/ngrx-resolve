@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "title": "Fire and Fury: Inside the Trump White House",
+        "author": "Michael Wolff",
+        "year": "2018"
+    },
+    {
+        "id": 2,
+        "title": "Milk and Honey",
+        "author": "Rupi Kaur",
+        "year": "2015"
+    },
+    {
+        "id": 3,
+        "title": "The Last Black Unicorn",
+        "author": "Tiffany Haddish",
+        "year": "2017"
+    }
+]

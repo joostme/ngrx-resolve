@@ -1,0 +1,6 @@
+<a routerLink="/books">back</a>
+
+<h1>{{ (book | async).title }}</h1>
+
+<h3>Author: {{ (book | async).author }}</h3>
+<h3>Year: {{ (book | async).year }}</h3>
