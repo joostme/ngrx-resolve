@@ -2,25 +2,33 @@ import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { BookListComponent } from './book-list/book-list.component';
 import { BookDetailsComponent } from './book-details/book-details.component';
+import { NgrxResolve } from '../ngrx-resolve/ngrx-resolve.resolver';
+import { ngrxResolveBookDetailConfig } from './book.ngrx-resolve';
 
 const routes: Routes = [
-    {
-        path: '',
-        component: BookListComponent
+  {
+    path: '',
+    component: BookListComponent
+  },
+  {
+    path: ':id',
+    component: BookDetailsComponent,
+    resolve: {
+      ngrx: NgrxResolve
     },
-    {
-        path: ':id',
-        component: BookDetailsComponent,
+    data: {
+      ngrx: ngrxResolveBookDetailConfig
     }
+  }
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(routes)
-    ],
-    exports: [
-        RouterModule
-    ]
+  imports: [
+    RouterModule.forChild(routes)
+  ],
+  exports: [
+    RouterModule
+  ]
 })
 export class BookRoutingModule {
 }
