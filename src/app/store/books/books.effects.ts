@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
 import { BooksActionTypes, BooksLoadedAction } from './books.actions';
 import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/map';
 import { BooksService } from '../../services/books.service';
 
 

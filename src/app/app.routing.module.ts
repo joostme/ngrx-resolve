@@ -11,7 +11,7 @@ const routes: Routes = [
     },
     {
         path: 'books',
-        loadChildren: 'app/sub-module/sub-module.module#SubModule',
+        loadChildren: 'app/book-module/book.module#BookModule',
     }
 ];
 
